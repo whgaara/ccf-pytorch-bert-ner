@@ -1,0 +1,11 @@
+ID,Catagory,Pos_b,Pos_e,Privacy
+8665,address,15,16,上海
+8665,address,18,19,北京
+8665,address,21,22,深圳
+8665,address,24,25,成都
+8665,book,0,1,每经
+8665,name,4,5,陈珂
+8665,name,6,7,胡琼
+8665,name,8,10,黄惠敏
+8665,name,11,12,杨斌
+8665,position,2,3,记者
