@@ -112,10 +112,14 @@ if __name__ == '__main__':
             label = data['input_tokens_class_id']
             if Debug:
                 print('获取数据 %s' % get_time())
-            mlm_output = roberta_ner(input_token, segment_ids).permute(0, 2, 1)
+            if IsCrf:
+                mlm_output = roberta_ner(input_token, segment_ids)
+                mask_loss = -1 * roberta_ner.crf(emissions=mlm_output, tags=label, mask=segment_ids.to(torch.uint8))
+            else:
+                mlm_output = roberta_ner(input_token, segment_ids).permute(0, 2, 1)
+                mask_loss = criterion(mlm_output, label)
             if Debug:
                 print('完成前向 %s' % get_time())
-            mask_loss = criterion(mlm_output, label)
             print_loss = mask_loss.item()
             optim.zero_grad()
             mask_loss.backward()
@@ -146,13 +150,18 @@ if __name__ == '__main__':
                 input_token_list = input_token.tolist()
                 input_len = len([x for x in input_token_list[0] if x])
                 label_list = test_data['input_tokens_class_id'].tolist()[:input_len]
-                mlm_output = roberta_ner(input_token, segment_ids)[:, :input_len, :]
-                output_tensor = torch.nn.Softmax(dim=-1)(mlm_output)
-                output_topk = torch.topk(output_tensor, 1).indices.squeeze(0).tolist()
+                mlm_output = roberta_ner(input_token, segment_ids)
+
+                if IsCrf:
+                    output_topk = roberta_ner.crf.decode(mlm_output, segment_ids.to(torch.uint8))[0]
+                else:
+                    mlm_output = mlm_output[:, :input_len, :]
+                    output_tensor = torch.nn.Softmax(dim=-1)(mlm_output)
+                    output_topk = torch.topk(output_tensor, 1).indices.squeeze(0).tolist()
+                    output_topk = [x[0] for x in output_topk]
 
                 # 累计数值
                 for i, output in enumerate(output_topk):
-                    output = output[0]
                     output2class.append(num_to_class[output])
                     label2class.append(num_to_class[label_list[i]])
                 output_entities = extract_output_entities(output2class)

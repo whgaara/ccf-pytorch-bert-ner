@@ -9,6 +9,9 @@ VocabPath = 'checkpoint/pretrain/vocab_pretrain.txt'
 # Debug开关
 Debug = False
 
+# 是否使用CRF
+IsCrf = True
+
 # 使用预训练模型开关
 UsePretrain = True
 

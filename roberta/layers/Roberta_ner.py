@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+from torchcrf import CRF
 from pretrain_config import *
 from roberta.common.tokenizers import Tokenizer
 from roberta.layers.Mlm import Mlm
@@ -42,6 +43,7 @@ class RobertaNer(nn.Module):
             for _ in range(self.num_hidden_layers)
         )
         self.mlm = Mlm(self.hidden_size, self.number_of_categories)
+        self.crf = CRF(self.number_of_categories, batch_first=True)
 
     @staticmethod
     def gen_attention_masks(segment_ids):
@@ -87,7 +89,7 @@ class RobertaNer(nn.Module):
         finetune_model_dict.update(new_parameter_dict)
         self.load_state_dict(finetune_model_dict)
 
-    def forward(self, input_token, segment_ids):
+    def forward(self, input_token, segment_ids, labels=None):
         # embedding
         embedding_x = self.roberta_emb(input_token) + self.position_emb()
         if AttentionMask:
@@ -102,4 +104,5 @@ class RobertaNer(nn.Module):
                 feedforward_x = self.transformer_blocks[i](feedforward_x, attention_mask)
         # ner
         output = self.mlm(feedforward_x)
+
         return output
