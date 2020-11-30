@@ -151,6 +151,9 @@ class NerInference(object):
 
 
 if __name__ == '__main__':
+    #########################
+    # 输入的大小写问题和逗号转换问题
+
     f = open('predict.csv', 'w', encoding='utf-8')
     f.write('ID,Category,Pos_b,Pos_e,Privacy\n')
     ner_infer = NerInference()

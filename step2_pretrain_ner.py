@@ -10,6 +10,63 @@ from roberta.data.ner_dataset import *
 from roberta.layers.Roberta_ner import RobertaNer
 
 
+# def extract_output_entities(class_list):
+#     entities = {}
+#     current = 1000
+#     state = 'out'
+#     for i, cla in enumerate(class_list):
+#         if cla == NormalChar or cla == 'pad':
+#             current = 1000
+#             state = 'out'
+#             continue
+#         if cla[0] == 'b':
+#             current = i
+#             state = 'in'
+#             entities[current] = []
+#             entities[current].append(cla)
+#         if cla[0] == 'i':
+#             if state == 'in':
+#                 entities[current].append(cla)
+#             else:
+#                 current = i
+#                 state = 'in'
+#                 entities[current] = []
+#                 entities[current].append(cla)
+#         if cla[0] == 'e':
+#             if state == 'in':
+#                 entities[current].append(cla)
+#                 current = 1000
+#                 state = 'out'
+#             else:
+#                 entities[i] = [cla]
+#     return entities
+
+
+# def extract_label_entities(class_list):
+#     entities = {}
+#     current = 10000
+#     state = 'out'
+#     for i, cla in enumerate(class_list):
+#         if cla == NormalChar:
+#             continue
+#         if cla[0] == 'b':
+#             current = i
+#             state = 'in'
+#             entities[current] = []
+#             entities[current].append(cla)
+#         if cla[0] == 'i':
+#             entities[current].append(cla)
+#         if cla[0] == 'e':
+#             if state == 'in':
+#                 entities[current].append(cla)
+#                 current = 10000
+#                 state = 'out'
+#             else:
+#                 entities[i] = [cla]
+#     return entities
+
+
+# 面向新标注数据
 def extract_output_entities(class_list):
     entities = {}
     current = 1000
@@ -28,41 +85,24 @@ def extract_output_entities(class_list):
             if state == 'in':
                 entities[current].append(cla)
             else:
-                current = i
-                state = 'in'
-                entities[current] = []
-                entities[current].append(cla)
-        if cla[0] == 'e':
-            if state == 'in':
-                entities[current].append(cla)
                 current = 1000
                 state = 'out'
-            else:
-                entities[i] = [cla]
     return entities
 
 
+# 面向新标注数据
 def extract_label_entities(class_list):
     entities = {}
     current = 10000
-    state = 'out'
     for i, cla in enumerate(class_list):
         if cla == NormalChar:
             continue
         if cla[0] == 'b':
             current = i
-            state = 'in'
             entities[current] = []
             entities[current].append(cla)
         if cla[0] == 'i':
             entities[current].append(cla)
-        if cla[0] == 'e':
-            if state == 'in':
-                entities[current].append(cla)
-                current = 10000
-                state = 'out'
-            else:
-                entities[i] = [cla]
     return entities
 
 
@@ -86,9 +126,9 @@ if __name__ == '__main__':
         print('Total Parameters:', sum([p.nelement() for p in roberta_ner.parameters()]))
 
     if UsePretrain and os.path.exists(PretrainPath):
-        print('开始加载本地模型！')
+        print('开始加载预训练模型！')
         roberta_ner.load_pretrain(PretrainPath)
-        print('完成加载本地模型！')
+        print('完成加载预训练模型！')
 
     optim = Adam(roberta_ner.parameters(), lr=NERLearningRate)
     criterion = nn.CrossEntropyLoss().to(device)
@@ -182,6 +222,6 @@ if __name__ == '__main__':
                 recall_rate = float(recall) / float(entities_count)
                 recall_rate = round(recall_rate, 4)
                 print('实体召回率为：%s' % recall_rate)
-                accuracy_rate = float(accuracy) / float(entities_count)
+                accuracy_rate = float(accuracy) / float(recall)
                 accuracy_rate = round(accuracy_rate, 4)
                 print('实体正确率为：%s\n' % accuracy_rate)
