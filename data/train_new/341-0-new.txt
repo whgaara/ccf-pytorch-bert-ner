@@ -1,0 +1,16 @@
+多 O
+数 O
+人 O
+又 O
+称 O
+这 O
+座 O
+岛 O
+叫 O
+“ O
+洛 B-scene
+克 I-scene
+岛 I-scene
+” O
+。 O
+END O

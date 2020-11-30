@@ -1,0 +1,16 @@
+是 O
+中 O
+国 O
+人 O
+气 O
+最 O
+高 O
+的 O
+D B-name
+o I-name
+t I-name
+A I-name
+解 B-position
+说 I-position
+。 O
+END O

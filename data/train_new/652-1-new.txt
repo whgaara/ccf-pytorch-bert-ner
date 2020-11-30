@@ -1,0 +1,12 @@
+同 O
+赔 O
+率 O
+下 O
+西 B-organization
+甲 I-organization
+战 O
+成 O
+平 O
+局 O
+, O
+END O

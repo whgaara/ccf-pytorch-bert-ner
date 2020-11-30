@@ -1,0 +1,12 @@
+去 O
+探 O
+访 O
+苍 B-scene
+山 I-scene
+清 O
+流 O
+桃 O
+溪 O
+谷 O
+。 O
+END O

@@ -1,0 +1,14 @@
+开 O
+放 O
+时 O
+间 O
+： O
+自 O
+邙 B-scene
+山 I-scene
+回 O
+洛 B-address
+阳 I-address
+后 O
+。 O
+END O

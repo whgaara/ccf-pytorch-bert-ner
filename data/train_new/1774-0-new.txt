@@ -1,0 +1,14 @@
+你 O
+认 O
+为 O
+莱 B-organization
+切 I-organization
+有 O
+无 O
+取 O
+胜 O
+的 O
+可 O
+能 O
+？ O
+END O

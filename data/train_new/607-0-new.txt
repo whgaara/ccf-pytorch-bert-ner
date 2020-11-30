@@ -1,0 +1,10 @@
+上 O
+天 O
+下 O
+海 O
+玩 O
+转 O
+塞 B-scene
+班 I-scene
+。 O
+END O

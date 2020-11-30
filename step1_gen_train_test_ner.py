@@ -7,6 +7,88 @@ from pretrain_config import *
 from roberta.common.tokenizers import Tokenizer
 
 
+def parse_new_data():
+    """
+    :return:
+    [123, 233, 334, 221, 299, ..., ...]
+    [ptzf, b-ypcf, i-ypcf, i-ypcf, e-ypcf, e-yplb, ..., pytzf, ...]
+    """
+    MaxLen = 0
+    class2num = {'pad': 0, 'ptzf': 1}
+    total_data = {}
+    tokenizer = Tokenizer(VocabPath)
+    input_path = 'data/train_new'
+    eval_path = 'data/eval_new'
+    f_train = open(NerCorpusPath, 'w', encoding='utf-8')
+    f_eval = open(NerEvalPath, 'w', encoding='utf-8')
+    category_list = []
+
+    for data_file in os.listdir(input_path):
+        if '.txt' not in data_file:
+            continue
+        file_num = data_file.split('.')[0]
+        f1 = open(os.path.join(input_path, data_file), 'r', encoding='utf-8')
+        lines = f1.readlines()
+        lines = [x.strip() for x in lines if x][:-1]
+        total_data[file_num] = {}
+        total_data[file_num]['sentence'] = ''
+        total_data[file_num]['tokens_id'] = []
+        total_data[file_num]['tokens_class'] = []
+        total_data[file_num]['tokens_class_num'] = []
+        for i, line in enumerate(lines):
+            try:
+                ch, label = tuple(line.lower().split(' '))
+            except:
+                print(file_num)
+                print(i)
+                print(line)
+                print('\n')
+                ch = '，'
+                label = 'o'
+            total_data[file_num]['sentence'] += ch
+            total_data[file_num]['tokens_id'].append(tokenizer.token_to_id(ch))
+            if label == 'o':
+                token_class = 'ptzf'
+                token_class_num = 1
+            else:
+                token_class = label.lower().replace('-', '')
+                if token_class[1:] in ['qq', 'vx', 'mobile', 'email']:
+                    token_class = 'ptzf'
+                if token_class != 'ptzf':
+                    category_list.append(token_class[1:])
+                if token_class in class2num:
+                    token_class_num = class2num[token_class]
+                else:
+                    token_class_num = len(class2num)
+                    class2num[token_class] = token_class_num
+            total_data[file_num]['tokens_class'].append(token_class)
+            total_data[file_num]['tokens_class_num'].append(token_class_num)
+
+    print(set(category_list))
+
+    # 补全所有的句子
+    for num in total_data:
+        difference = SentenceLength - len(total_data[num]['sentence'])
+        total_data[num]['tokens_id'].extend([0] * difference)
+        total_data[num]['tokens_class'].extend(['pad'] * difference)
+        total_data[num]['tokens_class_num'].extend([class2num['pad']] * difference)
+        total_data[num]['tokens_id'] = [str(x) for x in total_data[num]['tokens_id']]
+        total_data[num]['tokens_class_num'] = [str(x) for x in total_data[num]['tokens_class_num']]
+
+    # 将类型及编号进行存储
+    with open(Class2NumFile, 'wb') as f:
+        pickle.dump(class2num, f)
+
+    for num in total_data:
+        if total_data[num]['sentence']:
+            if total_data[num]['sentence']:
+                f_train.write(total_data[num]['sentence'] + ',' +
+                              ' '.join(total_data[num]['tokens_id']) + ',' +
+                              ' '.join(total_data[num]['tokens_class']) + ',' +
+                              ' '.join(total_data[num]['tokens_class_num']) + '\n'
+                              )
+
+
 def parse_source_data():
     """
     :return:
@@ -190,4 +272,5 @@ def parse_source_data():
 
 if __name__ == '__main__':
     print(len(open(VocabPath, 'r', encoding='utf-8').readlines()))
-    parse_source_data()
+    # parse_source_data()
+    parse_new_data()

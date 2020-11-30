@@ -23,7 +23,7 @@ AttentionMask = False
 DropOut = 0.1
 VocabSize = len(open(VocabPath, 'r', encoding='utf-8').readlines())
 HiddenSize = 768
-SentenceLength = 128
+SentenceLength = 384
 HiddenLayerNum = 12
 IntermediateSize = 3072
 AttentionHeadNum = 12

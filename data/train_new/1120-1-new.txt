@@ -1,0 +1,15 @@
+缺 O
+少 O
+索 B-name
+尔 I-name
+- I-name
+坎 I-name
+贝 I-name
+尔 I-name
+在 O
+后 O
+防 O
+压 O
+阵 O
+, O
+END O

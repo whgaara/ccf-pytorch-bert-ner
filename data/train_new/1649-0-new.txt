@@ -1,0 +1,17 @@
+我 O
+相 O
+信 O
+乌 B-organization
+迪 I-organization
+最 O
+起 O
+码 O
+也 O
+不 O
+会 O
+输 O
+给 O
+切 B-organization
+沃 I-organization
+。 O
+END O

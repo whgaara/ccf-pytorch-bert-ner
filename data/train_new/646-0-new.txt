@@ -1,0 +1,14 @@
+电 B-movie
+锯 I-movie
+惊 I-movie
+魂 I-movie
+ⅳ I-movie
+》 I-movie
+积 O
+蓄 O
+能 O
+量 O
+… O
+… O
+？ O
+END O

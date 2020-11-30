@@ -1,0 +1,13 @@
+吉 B-game
+他 I-game
+英 I-game
+雄 I-game
+5 I-game
+》 I-game
+等 O
+数 O
+款 O
+游 O
+戏 O
+。 O
+END O

@@ -1,0 +1,7 @@
+宝 B-company
+钢 I-company
+着 O
+急 O
+了 O
+。 O
+END O
