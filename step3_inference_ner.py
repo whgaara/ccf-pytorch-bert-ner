@@ -11,6 +11,65 @@ from roberta.common.tokenizers import Tokenizer
 from step2_pretrain_ner import extract_output_entities
 
 
+# def gen_test():
+#     max_len = 0
+#     result = {}
+#     for file in os.listdir(NerTestPath):
+#         if '.txt' in file:
+#             file_num = file.split('.')[0]
+#             result[file_num] = []
+#             with open(os.path.join(NerTestPath, file), 'r', encoding='utf-8') as f:
+#                 sentence = f.read().strip().replace(',', '，')
+#                 if len(sentence) < SentenceLength:
+#                     result[file_num].append(sentence)
+#                     continue
+#                 # 防止分割电影名
+#                 safe = []
+#                 sentence = list(sentence)
+#                 for ci, c in enumerate(sentence):
+#                     di = ci
+#                     if c == '《':
+#                         while di < len(sentence):
+#                             if sentence[di] == '》':
+#                                 safe = [ci, di]
+#                                 break
+#                             if sentence[di] == '《':
+#                                 break
+#                             di += 1
+#                     else:
+#                         if safe and safe[0] < ci < safe[1]:
+#                             continue
+#                         else:
+#                             if c in ['，', '。', '…']:
+#                                 sentence[ci] = '。'
+#                 sentence = ''.join(sentence)
+#                 ###################
+#                 segments = sentence.split('。')
+#                 seg_len = len(segments)
+#                 tmp_str = segments[0]
+#                 for i in range(1, seg_len):
+#                     if tmp_str and len(tmp_str)+len(segments[i]) < SentenceLength - 1:
+#                         tmp_str += segments[i] + '，'
+#                     else:
+#                         if tmp_str:
+#                             result[file_num].append(tmp_str)
+#                             if len(tmp_str) == 197:
+#                                 print(tmp_str)
+#                             tmp_str = ''
+#                         else:
+#                             tmp_str = segments[i]
+#                 if tmp_str:
+#                     result[file_num].append(tmp_str)
+#                     if len(tmp_str) == 197:
+#                         print(tmp_str)
+#     for i in result:
+#         for j in result[i]:
+#             if len(j) > max_len:
+#                 max_len = len(j)
+#     print(max_len)
+#     return result
+
+
 def gen_test():
     max_len = 0
     result = {}
@@ -23,49 +82,26 @@ def gen_test():
                 if len(sentence) < SentenceLength:
                     result[file_num].append(sentence)
                     continue
-                # 防止分割电影名
-                safe = []
-                sentence = list(sentence)
-                for ci, c in enumerate(sentence):
-                    di = ci
-                    if c == '《':
-                        while di < len(sentence):
-                            if sentence[di] == '》':
-                                safe = [ci, di]
-                                break
-                            if sentence[di] == '《':
-                                break
-                            di += 1
-                    else:
-                        if safe and safe[0] < ci < safe[1]:
-                            continue
-                        else:
-                            if c in ['，', '。', '…']:
-                                sentence[ci] = '。'
-                sentence = ''.join(sentence)
-                ###################
                 segments = sentence.split('。')
                 seg_len = len(segments)
                 tmp_str = segments[0]
                 for i in range(1, seg_len):
                     if tmp_str and len(tmp_str)+len(segments[i]) < SentenceLength - 1:
-                        tmp_str += segments[i] + '，'
+                        tmp_str += segments[i] + '。'
                     else:
                         if tmp_str:
                             result[file_num].append(tmp_str)
-                            if len(tmp_str) == 197:
-                                print(tmp_str)
                             tmp_str = ''
                         else:
                             tmp_str = segments[i]
                 if tmp_str:
                     result[file_num].append(tmp_str)
-                    if len(tmp_str) == 197:
-                        print(tmp_str)
     for i in result:
         for j in result[i]:
             if len(j) > max_len:
                 max_len = len(j)
+            if len(j) > SentenceLength:
+                print(i)
     print(max_len)
     return result
 
