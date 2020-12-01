@@ -4,6 +4,7 @@ from torchcrf import CRF
 from pretrain_config import *
 from roberta.common.tokenizers import Tokenizer
 from roberta.layers.Mlm import Mlm
+from roberta.layers.BiGRU import BiGRU
 from roberta.layers.Transformer import Transformer
 from roberta.layers.RobertaEmbeddings import TokenEmbedding, PositionEmbedding
 
@@ -34,6 +35,7 @@ class RobertaNer(nn.Module):
         # 申明网络
         self.roberta_emb = TokenEmbedding()
         self.position_emb = PositionEmbedding()
+        self.bi_gru = BiGRU(self.number_of_categories, self.number_of_categories)
         self.transformer_blocks = nn.ModuleList(
             Transformer(
                 hidden_size=self.hidden_size,
@@ -104,5 +106,8 @@ class RobertaNer(nn.Module):
                 feedforward_x = self.transformer_blocks[i](feedforward_x, attention_mask)
         # ner
         output = self.mlm(feedforward_x)
+
+        # birnn
+        output = self.bi_gru(output)
 
         return output
