@@ -238,18 +238,18 @@ if __name__ == '__main__':
             sentence_classes.extend(seg_class)
         assert len(sentence) == len(sentence_classes)
         # 文本后处理
-        for i, charclass in enumerate(sentence_classes):
-            if i > 0 and charclass[0] in ['b', 'i', 'e']:
-                if i+1 < len(sentence_classes):
-                    if sentence_classes[i - 1][0] == 'e' \
-                            and sentence_classes[i + 1][1:] != charclass[1:]\
-                            and sentence_classes[i - 1][1:] == charclass[1:]:
-                        sentence_classes[i - 1] = 'i' + sentence_classes[i - 1][1:]
-                        sentence_classes[i] = 'e' + sentence_classes[i][1:]
-                else:
-                    if sentence_classes[i - 1][0] == 'e' and sentence_classes[i - 1][1:] == charclass[1:]:
-                        sentence_classes[i - 1] = 'i' + sentence_classes[i - 1][1:]
-                        sentence_classes[i] = 'e' + sentence_classes[i][1:]
+        # for i, charclass in enumerate(sentence_classes):
+        #     if i > 0 and charclass[0] in ['b', 'i']:
+        #         if i+1 < len(sentence_classes):
+        #             if sentence_classes[i - 1][0] == 'e' \
+        #                     and sentence_classes[i + 1][1:] != charclass[1:]\
+        #                     and sentence_classes[i - 1][1:] == charclass[1:]:
+        #                 sentence_classes[i - 1] = 'i' + sentence_classes[i - 1][1:]
+        #                 sentence_classes[i] = 'e' + sentence_classes[i][1:]
+        #         else:
+        #             if sentence_classes[i - 1][0] == 'e' and sentence_classes[i - 1][1:] == charclass[1:]:
+        #                 sentence_classes[i - 1] = 'i' + sentence_classes[i - 1][1:]
+        #                 sentence_classes[i] = 'e' + sentence_classes[i][1:]
         entities = extract_output_entities(sentence_classes)
         # entities = gen_entities(sentence_classes)
         for pos in entities:
