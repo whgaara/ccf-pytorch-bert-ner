@@ -8,6 +8,7 @@ from tqdm import tqdm
 from extract_number import *
 from pretrain_config import *
 from roberta.common.tokenizers import Tokenizer
+from step2_pretrain_ner import extract_output_entities
 
 
 def gen_test():
@@ -69,28 +70,28 @@ def gen_test():
     return result
 
 
-def gen_entities(charclasses):
-    entities = {}
-    for i, cla in enumerate(charclasses):
-        if cla == NormalChar or cla == 'pad':
-            continue
-        if cla[0] == 'b':
-            j = i + 1
-            tmp = [cla]
-            current = cla[1:]
-            while j < len(charclasses):
-                if charclasses[j][0]=='i' and charclasses[j][1:]==current:
-                    tmp.append(charclasses[j])
-                    j += 1
-                elif charclasses[j][0]=='e' and charclasses[j][1:]==current:
-                    tmp.append(charclasses[j])
-                    entities[i] = tmp
-                    tmp = []
-                    break
-                else:
-                    tmp = []
-                    break
-    return entities
+# def gen_entities(charclasses):
+#     entities = {}
+#     for i, cla in enumerate(charclasses):
+#         if cla == NormalChar or cla == 'pad':
+#             continue
+#         if cla[0] == 'b':
+#             j = i + 1
+#             tmp = [cla]
+#             current = cla[1:]
+#             while j < len(charclasses):
+#                 if charclasses[j][0]=='i' and charclasses[j][1:]==current:
+#                     tmp.append(charclasses[j])
+#                     j += 1
+#                 elif charclasses[j][0]=='e' and charclasses[j][1:]==current:
+#                     tmp.append(charclasses[j])
+#                     entities[i] = tmp
+#                     tmp = []
+#                     break
+#                 else:
+#                     tmp = []
+#                     break
+#     return entities
 
 
 class NerInference(object):
@@ -168,7 +169,7 @@ if __name__ == '__main__':
                 begin = 0
             else:
                 begin = len(test[num][segi-1])
-            re = ner_infer.inference_single(seg)
+            re = ner_infer.inference_single(seg.lower().replace(',', '，'))
             qq = extract_qq(seg)
             if qq:
                 for item in qq:
@@ -216,8 +217,8 @@ if __name__ == '__main__':
                     if sentence_classes[i - 1][0] == 'e' and sentence_classes[i - 1][1:] == charclass[1:]:
                         sentence_classes[i - 1] = 'i' + sentence_classes[i - 1][1:]
                         sentence_classes[i] = 'e' + sentence_classes[i][1:]
-        # entities = extract_output_entities(sentence_classes)
-        entities = gen_entities(sentence_classes)
+        entities = extract_output_entities(sentence_classes)
+        # entities = gen_entities(sentence_classes)
         for pos in entities:
             if len(entities[pos]) == 1:
                 continue
