@@ -32,7 +32,7 @@ AttentionHeadNum = 12
 # ## NER训练调试参数开始 ## #
 NEREpochs = 32
 NERLearningRate = 1e-4
-NerBatchSize = 1
+NerBatchSize = 2
 # ## NER训练调试参数结束 ## #
 
 # ## ner模型文件路径 ## #
