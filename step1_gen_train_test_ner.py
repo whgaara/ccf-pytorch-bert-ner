@@ -47,7 +47,7 @@ def parse_new_data():
                 label = 'o'
             new_train_data[file_num]['sentence'] += ch
             new_train_data[file_num]['tokens_id'].append(tokenizer.token_to_id(ch))
-            if label == 'o':
+            if label == 'o' or label == '0':
                 token_class = 'ptzf'
                 token_class_num = 1
             else:
