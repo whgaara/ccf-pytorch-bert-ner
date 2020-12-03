@@ -13,13 +13,15 @@ def parse_new_data():
     [123, 233, 334, 221, 299, ..., ...]
     [ptzf, b-ypcf, i-ypcf, i-ypcf, e-ypcf, e-yplb, ..., pytzf, ...]
     """
-    class2num = {'pad': 0, 'ptzf': 1}
+    with open(Class2NumFile, 'rb') as f:
+        class2num = pickle.load(f)
+    # class2num = {'pad': 0, 'ptzf': 1}
     new_train_data = {}
     new_eval_data = {}
     tokenizer = Tokenizer(VocabPath)
     input_path = 'data/train_new'
     eval_path = 'data/eval_new'
-    f_train = open(NerCorpusPath, 'w', encoding='utf-8')
+    f_train = open(NerCorpusPath, 'a+', encoding='utf-8')
     f_eval = open(NerEvalPath, 'w', encoding='utf-8')
     category_list = []
 
@@ -120,8 +122,8 @@ def parse_new_data():
         new_eval_data[num]['tokens_class_num'] = [str(x) for x in new_eval_data[num]['tokens_class_num']]
 
     # 将类型及编号进行存储
-    with open(Class2NumFile, 'wb') as f:
-        pickle.dump(class2num, f)
+    # with open(Class2NumFile, 'wb') as f:
+    #     pickle.dump(class2num, f)
 
     for num in new_train_data:
         if new_train_data[num]['sentence']:
@@ -154,7 +156,7 @@ def parse_source_data():
     input_path = os.path.join(NerSourcePath, 'data')
     label_path = os.path.join(NerSourcePath, 'label')
     f_train = open(NerCorpusPath, 'w', encoding='utf-8')
-    f_eval = open(NerEvalPath, 'w', encoding='utf-8')
+    # f_eval = open(NerEvalPath, 'w', encoding='utf-8')
     category_list = []
 
     relabel_list = []
@@ -214,40 +216,25 @@ def parse_source_data():
             if category in ['QQ', 'vx', 'mobile', 'email']:
                 continue
             if begin == end:
-                if 'e' + category not in class2num:
-                    class2num['e' + category] = len(class2num)
-                total_data[int(file_num)]['tokens_class'][end] = 'e' + category
-                total_data[int(file_num)]['tokens_class_num'][end] = class2num['e' + category]
-            if end - begin == 1:
                 if 'b' + category not in class2num:
                     class2num['b' + category] = len(class2num)
-                if 'e' + category not in class2num:
-                    class2num['e' + category] = len(class2num)
-                # 更新tokens_class
-                total_data[int(file_num)]['tokens_class'][begin] = 'b' + category
-                total_data[int(file_num)]['tokens_class'][end] = 'e' + category
-                # 更新tokens_class_num
-                total_data[int(file_num)]['tokens_class_num'][begin] = class2num['b' + category]
-                total_data[int(file_num)]['tokens_class_num'][end] = class2num['e' + category]
-            if end - begin > 1:
+                total_data[int(file_num)]['tokens_class'][end] = 'b' + category
+                total_data[int(file_num)]['tokens_class_num'][end] = class2num['b' + category]
+            if end - begin > 0:
                 if 'b' + category not in class2num:
                     class2num['b' + category] = len(class2num)
                 if 'i' + category not in class2num:
                     class2num['i' + category] = len(class2num)
-                if 'e' + category not in class2num:
-                    class2num['e' + category] = len(class2num)
                 total_data[int(file_num)]['tokens_class'][begin] = 'b' + category
-                total_data[int(file_num)]['tokens_class'][begin+1:end] = ['i' + category] * (end - begin - 1)
-                total_data[int(file_num)]['tokens_class'][end] = 'e' + category
+                total_data[int(file_num)]['tokens_class'][begin+1:end] = ['i' + category] * (end - begin)
                 total_data[int(file_num)]['tokens_class_num'][begin] = class2num['b' + category]
-                total_data[int(file_num)]['tokens_class_num'][begin+1:end] = [class2num['i' + category]] * (end - begin - 1)
-                total_data[int(file_num)]['tokens_class_num'][end] = class2num['e' + category]
+                total_data[int(file_num)]['tokens_class_num'][begin+1:end] = [class2num['i' + category]] * (end - begin)
 
     # 将长句进行分割
     new_total_data = {}
     tmp_docker = ['', [], [], []]
     for num in total_data:
-        if len(total_data[num]['sentence']) <= 128:
+        if len(total_data[num]['sentence']) <= SentenceLength:
             tl = len(new_total_data)
             new_total_data[tl] = {}
             new_total_data[tl]['sentence'] = total_data[num]['sentence']
@@ -266,7 +253,7 @@ def parse_source_data():
                         MaxLen = len(tmp_docker[0])
                     if len(tmp_docker[0]) > 200:
                         x = 1
-                    if tc[i][0] in ['i', 'e'] or 0 < len(tmp_docker[0]) < 10:
+                    if tc[i][0] == 'i' or 0 < len(tmp_docker[0]) < 10:
                         tmp_docker[0] += word
                         tmp_docker[1].append(ti[i])
                         tmp_docker[2].append(tc[i])
@@ -305,24 +292,24 @@ def parse_source_data():
         pickle.dump(class2num, f)
 
     for num in total_data:
-        rad = random.random()
-        if num > 3000 and rad < 0.02:
-            if total_data[num]['sentence']:
-                f_eval.write(total_data[num]['sentence'] + ',' +
-                             ' '.join(total_data[num]['tokens_id']) + ',' +
-                             ' '.join(total_data[num]['tokens_class']) + ',' +
-                             ' '.join(total_data[num]['tokens_class_num']) + '\n'
-                             )
-        else:
-            if total_data[num]['sentence']:
-                f_train.write(total_data[num]['sentence'] + ',' +
-                              ' '.join(total_data[num]['tokens_id']) + ',' +
-                              ' '.join(total_data[num]['tokens_class']) + ',' +
-                              ' '.join(total_data[num]['tokens_class_num']) + '\n'
-                              )
+        # rad = random.random()
+        # if num > 3000 and rad < 0.02:
+        #     if total_data[num]['sentence']:
+        #         f_eval.write(total_data[num]['sentence'] + ',' +
+        #                      ' '.join(total_data[num]['tokens_id']) + ',' +
+        #                      ' '.join(total_data[num]['tokens_class']) + ',' +
+        #                      ' '.join(total_data[num]['tokens_class_num']) + '\n'
+        #                      )
+        # else:
+        if total_data[num]['sentence']:
+            f_train.write(total_data[num]['sentence'] + ',' +
+                          ' '.join(total_data[num]['tokens_id']) + ',' +
+                          ' '.join(total_data[num]['tokens_class']) + ',' +
+                          ' '.join(total_data[num]['tokens_class_num']) + '\n'
+                          )
 
 
 if __name__ == '__main__':
     print(len(open(VocabPath, 'r', encoding='utf-8').readlines()))
-    # parse_source_data()
+    parse_source_data()
     parse_new_data()
